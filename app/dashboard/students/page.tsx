@@ -46,26 +46,47 @@ export default async function StudentsPage() {
     return String(v);
   };
 
+  const toStr = (v: unknown): string | null => (v == null ? null : typeof v === "string" ? v : String(v));
+
+  type SerializableProfile = {
+    nameAr: string | null;
+    nameEn: string | null;
+    nationality: string | null;
+    dateOfBirth: string | null;
+    nationalId: string | null;
+    academicDegree: string | null;
+    whatsappPhone: string | null;
+    otherPhone: string | null;
+    professionalDegree: string | null;
+    department: string | null;
+    researchTitle: string | null;
+    specialization: string | null;
+    thesisSupervisor: string | null;
+    currentJobTitle: string | null;
+    employer: string | null;
+    formSignedAt: string | null;
+  };
+
   const students = rows.map((s, i) => {
     const profile = profiles[i];
     const p = profile as Record<string, unknown> | null;
-    const serializableProfile = p
+    const serializableProfile: SerializableProfile | null = p
       ? {
-          nameAr: (p.nameAr ?? p.name_ar) ?? null,
-          nameEn: (p.nameEn ?? p.name_en) ?? null,
-          nationality: p.nationality ?? null,
+          nameAr: toStr(p.nameAr ?? p.name_ar),
+          nameEn: toStr(p.nameEn ?? p.name_en),
+          nationality: toStr(p.nationality),
           dateOfBirth: toDateString(p.dateOfBirth ?? p.date_of_birth),
-          nationalId: (p.nationalId ?? p.national_id) ?? null,
-          academicDegree: (p.academicDegree ?? p.academic_degree) ?? null,
-          whatsappPhone: (p.whatsappPhone ?? p.whatsapp_phone) ?? null,
-          otherPhone: (p.otherPhone ?? p.other_phone) ?? null,
-          professionalDegree: (p.professionalDegree ?? p.professional_degree) ?? null,
-          department: p.department ?? null,
-          researchTitle: (p.researchTitle ?? p.research_title) ?? null,
-          specialization: p.specialization ?? null,
-          thesisSupervisor: (p.thesisSupervisor ?? p.thesis_supervisor) ?? null,
-          currentJobTitle: (p.currentJobTitle ?? p.current_job_title) ?? null,
-          employer: p.employer ?? null,
+          nationalId: toStr(p.nationalId ?? p.national_id),
+          academicDegree: toStr(p.academicDegree ?? p.academic_degree),
+          whatsappPhone: toStr(p.whatsappPhone ?? p.whatsapp_phone),
+          otherPhone: toStr(p.otherPhone ?? p.other_phone),
+          professionalDegree: toStr(p.professionalDegree ?? p.professional_degree),
+          department: toStr(p.department),
+          researchTitle: toStr(p.researchTitle ?? p.research_title),
+          specialization: toStr(p.specialization),
+          thesisSupervisor: toStr(p.thesisSupervisor ?? p.thesis_supervisor),
+          currentJobTitle: toStr(p.currentJobTitle ?? p.current_job_title),
+          employer: toStr(p.employer),
           formSignedAt: toDateString(p.formSignedAt ?? p.form_signed_at),
         }
       : null;

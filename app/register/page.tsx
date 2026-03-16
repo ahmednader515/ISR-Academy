@@ -163,7 +163,7 @@ export default function RegisterPage() {
               <DatePicker
                 id="date_of_birth"
                 selected={dateOfBirth ? new Date(dateOfBirth) : null}
-                onChange={(d) => setDateOfBirth(d ? d.toISOString().split("T")[0] : "")}
+                onChange={(d: Date | null) => setDateOfBirth(d ? d.toISOString().split("T")[0] : "")}
                 minDate={new Date(1920, 0, 1)}
                 maxDate={new Date()}
                 dateFormat="yyyy-MM-dd"
@@ -365,7 +365,7 @@ export default function RegisterPage() {
               <DatePicker
                 id="form_signed_at"
                 selected={formSignedAt ? new Date(formSignedAt) : null}
-                onChange={(d) => setFormSignedAt(d ? d.toISOString().split("T")[0] : "")}
+                onChange={(d: Date | null) => setFormSignedAt(d ? d.toISOString().split("T")[0] : "")}
                 minDate={new Date(2000, 0, 1)}
                 maxDate={new Date()}
                 dateFormat="yyyy-MM-dd"
