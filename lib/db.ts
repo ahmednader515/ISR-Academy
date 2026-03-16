@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { neon } from "@neondatabase/serverless";
-import type { User, UserRole, Course, Category, Review, HomepageSetting, Enrollment, ActivationCode, HomeworkSubmission, Lesson, Quiz, Question, QuestionOption, LiveStream, LiveStreamProvider, Conversation, Message } from "./types";
+import type { User, UserRole, ResearcherProfile, Course, Category, Review, HomepageSetting, Enrollment, ActivationCode, HomeworkSubmission, Lesson, Quiz, Question, QuestionOption, LiveStream, LiveStreamProvider, Conversation, Message } from "./types";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL غير معرّف");
@@ -128,6 +128,51 @@ export async function createUser(data: {
   const u = await getUserById(id);
   if (!u) throw new Error("فشل إنشاء المستخدم");
   return u;
+}
+
+export async function createResearcherProfile(userId: string, data: {
+  name_ar?: string | null;
+  name_en?: string | null;
+  nationality?: string | null;
+  date_of_birth?: string | null;
+  national_id?: string | null;
+  academic_degree?: string | null;
+  whatsapp_phone?: string | null;
+  other_phone?: string | null;
+  professional_degree?: string | null;
+  department?: string | null;
+  research_title?: string | null;
+  specialization?: string | null;
+  thesis_supervisor?: string | null;
+  current_job_title?: string | null;
+  employer?: string | null;
+  form_signed_at?: string | null;
+}): Promise<ResearcherProfile> {
+  const id = generateId();
+  await sql`
+    INSERT INTO "ResearcherProfile" (
+      id, user_id, name_ar, name_en, nationality, date_of_birth, national_id,
+      academic_degree, whatsapp_phone, other_phone, professional_degree,
+      department, research_title, specialization, thesis_supervisor,
+      current_job_title, employer, form_signed_at
+    ) VALUES (
+      ${id}, ${userId},
+      ${data.name_ar ?? null}, ${data.name_en ?? null}, ${data.nationality ?? null},
+      ${data.date_of_birth ?? null}, ${data.national_id ?? null},
+      ${data.academic_degree ?? null}, ${data.whatsapp_phone ?? null}, ${data.other_phone ?? null},
+      ${data.professional_degree ?? null}, ${data.department ?? null},
+      ${data.research_title ?? null}, ${data.specialization ?? null}, ${data.thesis_supervisor ?? null},
+      ${data.current_job_title ?? null}, ${data.employer ?? null}, ${data.form_signed_at ?? null}
+    )
+  `;
+  const rows = await sql`SELECT * FROM "ResearcherProfile" WHERE id = ${id} LIMIT 1`;
+  return rowToCamel(rows[0] as Record<string, unknown>) as ResearcherProfile;
+}
+
+export async function getResearcherProfileByUserId(userId: string): Promise<ResearcherProfile | null> {
+  const rows = await sql`SELECT * FROM "ResearcherProfile" WHERE user_id = ${userId} LIMIT 1`;
+  const r = rows[0] as Record<string, unknown> | undefined;
+  return r ? (rowToCamel(r) as ResearcherProfile) : null;
 }
 
 export async function updateUser(

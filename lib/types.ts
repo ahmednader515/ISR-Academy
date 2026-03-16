@@ -18,6 +18,30 @@ export interface User {
   updated_at: Date;
 }
 
+/** بيانات الباحث المسجلة عند إنشاء الحساب */
+export interface ResearcherProfile {
+  id: string;
+  user_id: string;
+  name_ar: string | null;
+  name_en: string | null;
+  nationality: string | null;
+  date_of_birth: string | null;
+  national_id: string | null;
+  academic_degree: string | null;
+  whatsapp_phone: string | null;
+  other_phone: string | null;
+  professional_degree: string | null;
+  department: string | null;
+  research_title: string | null;
+  specialization: string | null;
+  thesis_supervisor: string | null;
+  current_job_title: string | null;
+  employer: string | null;
+  form_signed_at: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
 export interface Category {
   id: string;
   name: string;

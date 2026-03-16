@@ -12,6 +12,26 @@ type Enrollment = {
   course: Course;
 };
 
+/** بيانات الباحث (مفاتيح camelCase كما تُرجع من rowToCamel) */
+type StudentProfile = {
+  nameAr?: string | null;
+  nameEn?: string | null;
+  nationality?: string | null;
+  dateOfBirth?: string | null;
+  nationalId?: string | null;
+  academicDegree?: string | null;
+  whatsappPhone?: string | null;
+  otherPhone?: string | null;
+  professionalDegree?: string | null;
+  department?: string | null;
+  researchTitle?: string | null;
+  specialization?: string | null;
+  thesisSupervisor?: string | null;
+  currentJobTitle?: string | null;
+  employer?: string | null;
+  formSignedAt?: string | null;
+} | null;
+
 type Student = {
   id: string;
   name: string;
@@ -22,6 +42,7 @@ type Student = {
   guardian_number?: string | null;
   _count: { enrollments: number };
   enrollments: Enrollment[];
+  profile?: StudentProfile;
 };
 
 export function StudentsList({
@@ -49,6 +70,7 @@ export function StudentsList({
   const [editStudentNumber, setEditStudentNumber] = useState("");
   const [editGuardianNumber, setEditGuardianNumber] = useState("");
   const [coursesStudent, setCoursesStudent] = useState<Student | null>(null);
+  const [detailStudent, setDetailStudent] = useState<Student | null>(null);
   const [addCourseId, setAddCourseId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -62,7 +84,10 @@ export function StudentsList({
         s.name.toLowerCase().includes(q) ||
         s.email.toLowerCase().includes(q) ||
         (s.student_number ?? "").toLowerCase().includes(q) ||
-        (s.guardian_number ?? "").toLowerCase().includes(q)
+        (s.guardian_number ?? "").toLowerCase().includes(q) ||
+        (s.profile?.nameAr ?? "").toLowerCase().includes(q) ||
+        (s.profile?.nameEn ?? "").toLowerCase().includes(q) ||
+        (s.profile?.nationalId ?? "").toLowerCase().includes(q)
     );
   }, [initialStudents, search]);
 
@@ -176,12 +201,12 @@ export function StudentsList({
   return (
     <div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-[var(--color-foreground)]">بحث بالاسم أو البريد أو رقم الطالب أو رقم ولي الأمر</label>
+        <label className="block text-sm font-medium text-[var(--color-foreground)]">بحث بالاسم أو البريد أو رقم الطالب</label>
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="اسم الطالب، البريد، رقم الطالب، رقم ولي الأمر..."
+          placeholder="اسم الطالب، البريد، رقم الطالب..."
           className="mt-1 w-full max-w-md rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
         />
       </div>
@@ -192,7 +217,6 @@ export function StudentsList({
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">الاسم</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">البريد</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">رقم الطالب</th>
-              <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">رقم ولي الأمر</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">رصيد</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">الدورات</th>
               {canAddBalance && (
@@ -201,6 +225,7 @@ export function StudentsList({
               {canManageEnrollments && (
                 <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">إدارة الدورات</th>
               )}
+              <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">البيانات</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">تعديل</th>
             </tr>
           </thead>
@@ -210,7 +235,6 @@ export function StudentsList({
                 <td className="p-3 font-medium text-[var(--color-foreground)]">{s.name}</td>
                 <td className="p-3 text-[var(--color-muted)]">{s.email}</td>
                 <td className="p-3 text-[var(--color-foreground)]">{s.student_number ?? "—"}</td>
-                <td className="p-3 text-[var(--color-foreground)]">{s.guardian_number ?? "—"}</td>
                 <td className="p-3">{Number(s.balance).toFixed(2)} ج.م</td>
                 <td className="p-3">{s._count.enrollments}</td>
                 {canAddBalance && (
@@ -229,6 +253,15 @@ export function StudentsList({
                     </button>
                   </td>
                 )}
+                <td className="p-3">
+                  <button
+                    type="button"
+                    onClick={() => setDetailStudent(s)}
+                    className="text-sm font-medium text-[var(--color-primary)] hover:underline"
+                  >
+                    البيانات الكاملة
+                  </button>
+                </td>
                 <td className="p-3">
                   <button
                     type="button"
@@ -306,6 +339,51 @@ export function StudentsList({
               <button
                 type="button"
                 onClick={() => { setCoursesStudent(null); setEnrollError(""); }}
+                className="rounded-[var(--radius-btn)] border border-[var(--color-border)] px-4 py-2 text-sm font-medium"
+              >
+                إغلاق
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {detailStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-[var(--color-foreground)]">البيانات الكاملة — {detailStudent.name}</h3>
+            <div className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+              <div><span className="text-[var(--color-muted)]">الاسم (الحساب):</span> <span className="text-[var(--color-foreground)]">{detailStudent.name}</span></div>
+              <div><span className="text-[var(--color-muted)]">البريد الإلكتروني:</span> <span className="text-[var(--color-foreground)]">{detailStudent.email}</span></div>
+              <div><span className="text-[var(--color-muted)]">رقم الطالب:</span> <span className="text-[var(--color-foreground)]">{detailStudent.student_number ?? "—"}</span></div>
+              <div><span className="text-[var(--color-muted)]">الرصيد:</span> <span className="text-[var(--color-foreground)]">{Number(detailStudent.balance).toFixed(2)} ج.م</span></div>
+              {detailStudent.profile ? (
+                <>
+                  <div><span className="text-[var(--color-muted)]">الاسم رباعي (عربي):</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.nameAr ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">الاسم رباعي (إنجليزي):</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.nameEn ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">الجنسية:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.nationality ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">تاريخ الميلاد:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.dateOfBirth ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">الرقم القومي:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.nationalId ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">الدرجة العلمية:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.academicDegree ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">رقم الواتساب:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.whatsappPhone ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">رقم تليفون آخر:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.otherPhone ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">الدرجة المهنية:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.professionalDegree ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">القسم:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.department ?? "—"}</span></div>
+                  <div className="sm:col-span-2"><span className="text-[var(--color-muted)]">عنوان البحث:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.researchTitle ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">الشعبة / التخصص:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.specialization ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">المشرف على الرسالة:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.thesisSupervisor ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">الوظيفة الحالية:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.currentJobTitle ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">جهة العمل:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.employer ?? "—"}</span></div>
+                  <div><span className="text-[var(--color-muted)]">تحرير في يوم:</span> <span className="text-[var(--color-foreground)]">{detailStudent.profile.formSignedAt ?? "—"}</span></div>
+                </>
+              ) : (
+                <div className="sm:col-span-2 text-[var(--color-muted)]">لا توجد بيانات باحث مسجّلة لهذا الطالب.</div>
+              )}
+            </div>
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => setDetailStudent(null)}
                 className="rounded-[var(--radius-btn)] border border-[var(--color-border)] px-4 py-2 text-sm font-medium"
               >
                 إغلاق
