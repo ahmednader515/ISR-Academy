@@ -149,13 +149,14 @@ export function MessagesView({
       } catch {
         /* ignore */
       }
-      if (conv.id) {
-        setSelectedConversationId(conv.id);
+      const conversationId = conv.id;
+      if (conversationId) {
+        setSelectedConversationId(conversationId);
         setConversations((prev) => {
-          const has = prev.some((c) => c.id === conv.id);
+          const has = prev.some((c) => c.id === conversationId);
           if (has) return prev;
           const name = students.find((s) => s.id === studentId)?.name ?? "طالب";
-          return [{ id: conv.id, studentName: name, ...conv }, ...prev];
+          return [{ ...conv, id: conversationId, studentName: name }, ...prev];
         });
       }
     } finally {
@@ -201,12 +202,13 @@ export function MessagesView({
       } catch {
         /* ignore */
       }
-      if (conv.id) {
-        setSelectedConversationId(conv.id);
+      const conversationId = conv.id;
+      if (conversationId) {
+        setSelectedConversationId(conversationId);
         const staff = staffList.find((s) => s.id === staffId);
         setConversations((prev) => {
-          if (prev.some((c) => c.id === conv.id)) return prev;
-          return [{ id: conv.id, staffUserId: staffId, staffRole: staff?.role, ...conv }, ...prev];
+          if (prev.some((c) => c.id === conversationId)) return prev;
+          return [{ ...conv, id: conversationId, staffUserId: staffId, staffRole: staff?.role }, ...prev];
         });
       }
     } finally {
@@ -226,13 +228,14 @@ export function MessagesView({
         body: JSON.stringify({ conversationId: selectedConversationId, messageType: "text", content: trimmed }),
       });
       const text = await res.text();
-      let msg: { id?: string } = {};
+      let msg: MessageItem | null = null;
       try {
-        msg = text ? JSON.parse(text) : {};
+        const parsed = text ? JSON.parse(text) : null;
+        if (parsed && typeof parsed.id === "string") msg = parsed as MessageItem;
       } catch {
         /* ignore */
       }
-      if (msg.id) setMessages((prev) => [...prev, msg]);
+      if (msg) setMessages((prev) => [...prev, msg]);
     } finally {
       setSending(false);
     }
@@ -253,13 +256,14 @@ export function MessagesView({
         }),
       });
       const text = await res.text();
-      let msg: { id?: string } = {};
+      let msg: MessageItem | null = null;
       try {
-        msg = text ? JSON.parse(text) : {};
+        const parsed = text ? JSON.parse(text) : null;
+        if (parsed && typeof parsed.id === "string") msg = parsed as MessageItem;
       } catch {
         /* ignore */
       }
-      if (msg.id) setMessages((prev) => [...prev, msg]);
+      if (msg) setMessages((prev) => [...prev, msg]);
     } finally {
       setSending(false);
     }
