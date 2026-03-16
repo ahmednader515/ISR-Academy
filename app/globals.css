@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  --font-display: var(--font-outfit), system-ui, sans-serif;
+  --radius-card: 1rem;
+  --radius-btn: 0.75rem;
+}
+
+/* الوضع النهاري: صفحة بيضاء + تدرج أزرق من الأسفل للأعلى */
+html.light {
+  --color-background: #ffffff;
+  --color-foreground: #1e293b;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-primary: #0ea5e9;
+  --color-primary-hover: #0284c7;
+  --color-primary-light: #e0f2fe;
+  --color-accent: #f59e0b;
+  --color-muted: #64748b;
+  --color-success: #059669;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.06), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --color-reviews-bg: #f1f5f9;
+  --color-reviews-avatar: #e2e8f0;
+}
+
+/* الوضع الليلي: أسود عادي */
+html.dark {
+  --color-background: #000000;
+  --color-foreground: #fafaf9;
+  --color-surface: #0a0a0a;
+  --color-border: #1a1a1a;
+  --color-primary: #2dd4bf;
+  --color-primary-hover: #5eead4;
+  --color-primary-light: #134e4a;
+  --color-accent: #f59e0b;
+  --color-muted: #a8a29e;
+  --color-success: #059669;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.5);
+  --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  --color-reviews-bg: #171717;
+  --color-reviews-avatar: #262626;
+}
+
+/* افتراضي: وضع ليلي إذا لم يُختر وضع — أسود عادي */
+html:not(.light):not(.dark) {
+  --color-background: #000000;
+  --color-foreground: #fafaf9;
+  --color-surface: #0a0a0a;
+  --color-border: #1a1a1a;
+  --color-primary: #2dd4bf;
+  --color-primary-hover: #5eead4;
+  --color-primary-light: #134e4a;
+  --color-accent: #f59e0b;
+  --color-muted: #a8a29e;
+  --color-success: #059669;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.5);
+  --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  --color-reviews-bg: #171717;
+  --color-reviews-avatar: #262626;
+}
+
+:root {
+  --background: var(--color-background);
+  --foreground: var(--color-foreground);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* في الوضع الساطع: تدرج أزرق خفيف جداً حتى منتصف الشاشة */
+html.light body {
+  background: linear-gradient(
+    to top,
+    #e0f2fe 0%,
+    #e8f4fd 20%,
+    #f0f9ff 35%,
+    #f5faff 45%,
+    #fafcff 48%,
+    #ffffff 50%,
+    #ffffff 100%
+  );
+  background-attachment: fixed;
+  background-size: 100% 100vh;
+}
+
+/* منطقة المحتوى الرئيسي (الكورسات وغيرها) بيضاء بالكامل بدون تدرج */
+html.light main {
+  background: #ffffff;
+}
+
+/* الصفحة الرئيسية فقط: تدرج أزرق خفيف جداً حتى منتصف الـ Hero */
+html.light .home-hero-gradient {
+  background: linear-gradient(
+    to top,
+    #e0f2fe 0%,
+    #e8f4fd 20%,
+    #f0f9ff 35%,
+    #f5faff 45%,
+    #fafcff 48%,
+    #ffffff 50%,
+    #ffffff 100%
+  ) !important;
+}
+
+/* Hero SaaS: full width, wave at bottom */
+.hero-saas {
+  width: 100%;
+}
+
+.hero-saas .hero-stars {
+  opacity: 0.9;
+}
+
+/* لون التموج: أبيض في الوضع الساطع، أسود في الوضع المظلم فقط (حسب مفتاح الثيم) */
+html.light .hero-wave-fill {
+  fill: #ffffff;
+}
+html.dark .hero-wave-fill {
+  fill: #000000;
+}
+.hero-wave-fill {
+  transition: fill 0.3s ease;
+}
+
+/* حركة خفيفة للنجوم (تلميع مثل النجوم الحقيقية) */
+@keyframes hero-star-twinkle {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
+}
+
+.hero-star-dot {
+  animation: hero-star-twinkle 5s ease-in-out infinite;
+}
+
+/* دعم RTL للعربية */
+[dir="rtl"] {
+  text-align: right;
+}
+
+/* تحسين القراءة للنصوص الطويلة */
+.prose-custom {
+  line-height: 1.75;
+  color: var(--color-foreground);
+}
+
+.prose-custom p {
+  margin-bottom: 1rem;
+}
+
+.prose-custom ul, .prose-custom ol {
+  padding-inline-start: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* شاشة التحميل */
+@keyframes loading-dot {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.loading-dot {
+  animation: loading-dot 1.4s ease-in-out infinite both;
+}
+
+/* حركة طفو خفيفة لأيقونات المدرس */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-icon {
+  animation: float-gentle 3.5s ease-in-out infinite;
+}
+
+.float-icon-1 { animation-delay: 0s; }
+.float-icon-2 { animation-delay: 0.6s; }
+.float-icon-3 { animation-delay: 1.2s; }
