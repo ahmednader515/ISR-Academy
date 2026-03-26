@@ -57,11 +57,6 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const digits = studentNumber.replace(/\D/g, "");
-    if (digits.length !== 11) {
-      setError("رقم الهاتف يجب أن يكون 11 رقماً");
-      return;
-    }
     setLoading(true);
     const res = await fetch("/api/auth/signup", {
       method: "POST",
@@ -116,7 +111,9 @@ export default function RegisterPage() {
           )}
 
           <section className="space-y-4">
-            <h2 className="text-lg font-semibold text-[var(--color-foreground)]">البيانات الشخصية</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-foreground)]">
+              البيانات الشخصية
+            </h2>
             <div>
               <label htmlFor="name_ar" className={labelClass}>
                 الاسم رباعي باللغة العربية
@@ -163,7 +160,9 @@ export default function RegisterPage() {
               <DatePicker
                 id="date_of_birth"
                 selected={dateOfBirth ? new Date(dateOfBirth) : null}
-                onChange={(d: Date | null) => setDateOfBirth(d ? d.toISOString().split("T")[0] : "")}
+                onChange={(d: Date | null) =>
+                  setDateOfBirth(d ? d.toISOString().split("T")[0] : "")
+                }
                 minDate={new Date(1920, 0, 1)}
                 maxDate={new Date()}
                 dateFormat="yyyy-MM-dd"
@@ -217,11 +216,10 @@ export default function RegisterPage() {
               <input
                 id="whatsapp_phone"
                 type="tel"
-                inputMode="numeric"
                 value={whatsappPhone}
                 onChange={(e) => setWhatsappPhone(e.target.value)}
                 className={inputClass}
-                placeholder="01234567890"
+                placeholder="رقم الواتساب"
               />
             </div>
             <div>
@@ -365,7 +363,9 @@ export default function RegisterPage() {
               <DatePicker
                 id="form_signed_at"
                 selected={formSignedAt ? new Date(formSignedAt) : null}
-                onChange={(d: Date | null) => setFormSignedAt(d ? d.toISOString().split("T")[0] : "")}
+                onChange={(d: Date | null) =>
+                  setFormSignedAt(d ? d.toISOString().split("T")[0] : "")
+                }
                 minDate={new Date(2000, 0, 1)}
                 maxDate={new Date()}
                 dateFormat="yyyy-MM-dd"
@@ -404,14 +404,12 @@ export default function RegisterPage() {
               <input
                 id="student_number"
                 type="tel"
-                inputMode="numeric"
                 value={studentNumber}
                 onChange={(e) => setStudentNumber(e.target.value)}
                 required
                 className={`${inputClass} text-right`}
-                placeholder="01234567890"
+                placeholder="رقم الهاتف"
               />
-              <p className="mt-1 text-right text-xs text-[var(--color-muted)]">11 رقماً</p>
             </div>
             <div>
               <label htmlFor="password" className={labelClass}>
@@ -440,10 +438,7 @@ export default function RegisterPage() {
         </form>
         <p className="mt-6 text-center text-sm text-[var(--color-muted)]">
           لديك حساب؟{" "}
-          <Link
-            href="/login"
-            className="font-medium text-[var(--color-primary)] hover:underline"
-          >
+          <Link href="/login" className="font-medium text-[var(--color-primary)] hover:underline">
             تسجيل الدخول
           </Link>
         </p>
@@ -451,3 +446,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+
